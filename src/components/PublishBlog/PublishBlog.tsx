@@ -81,7 +81,7 @@ const PublishBlog = () => {
         />
 
         <div className="flex justify-center items-center">
-          <Button onClick={publishBlogData} loading={loading}>
+          <Button onClick={publishBlogData} loading={isBlogUploadLoading}>
             Login
           </Button>
         </div>
