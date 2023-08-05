@@ -3,29 +3,30 @@ import { auth } from "@/utils/firebaseConfig";
 import { Button, PasswordInput, TextInput } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconKey, IconUserShield } from "@tabler/icons-react";
-import { useRouter } from "next/navigation";
-import { ChangeEvent, MouseEvent, useState } from "react";
+import { redirect } from "next/navigation";
+import { ChangeEvent, MouseEvent, useEffect, useState } from "react";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 
 const Login = () => {
-  const router = useRouter();
   const { setEmail } = useStore((state) => state);
 
   const [logInData, setLogInData] = useState({
     email: "",
     password: "",
   });
-  
+
   const [signInWithEmailAndPassword, user, loading, error] =
     useSignInWithEmailAndPassword(auth);
 
-  if (user) {
-    setEmail(logInData?.email)
-    notifications.show({
-      message: "Login success",
-    });
-    router.push("/dashboard");
-  }
+  useEffect(() => {
+    if (!!user?.user?.email) {
+      setEmail(user?.user?.email);
+      notifications.show({
+        message: "Login success",
+      });
+      redirect("/dashboard");
+    }
+  }, [user?.user?.email]);
 
   if (error) {
     notifications.show({
@@ -33,7 +34,6 @@ const Login = () => {
       message: error?.message,
     });
   }
-
 
   const inputHandler = (event: ChangeEvent<HTMLInputElement>) => {
     setLogInData({ ...logInData, [event.target.name]: event.target.value });
